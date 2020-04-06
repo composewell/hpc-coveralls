@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
+{-# LANGUAGE CPP #-}
 
 -- |
 -- Module:      Trace.Hpc.Coveralls.Paths
@@ -20,13 +21,28 @@ import System.Directory (
 import System.Directory.Tree (
     AnchoredDirTree(..), dirTree, readDirectoryWith
     )
+import System.Info (os, arch)
 import Trace.Hpc.Tix
 
 distDir :: FilePath
-distDir = "dist/"
+distDir = "dist-newstyle/"
 
-hpcDirs :: [FilePath]
-hpcDirs = map (distDir ++) ["hpc/vanilla/", "hpc/"]
+distribName :: String
+distribName | os == "darwin" = arch ++ "-osx"
+            | os == "linux" = arch ++ "-linux"
+            | os == "mingw32" = arch ++ "-windows"
+            | otherwise = arch ++ "-unknown"
+
+hpcDirs :: Maybe String -> [FilePath]
+hpcDirs (Just pkgNameVer) = map (distDir ++) [ "build/"
+                                             ++ distribName ++ "/"
+                                             ++ "ghc-" ++ TOOL_VERSION_ghc ++"/"
+                                             ++ pkgNameVer ++ "/"
+                                             ++ "/hpc/vanilla/"
+                                             , "dist/hpc/vanilla/"
+                                             , "hpc/"
+                                             ]
+hpcDirs _ = []
 
 tixDir :: String -> FilePath
 tixDir = (++ "tix/")

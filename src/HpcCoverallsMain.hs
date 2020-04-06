@@ -28,7 +28,8 @@ getServiceAndJobID = do
         Just (ciName, jobIdVarName) -> do
             jobId <- getEnv jobIdVarName
             return (ciName, jobId)
-        _ -> error "Unsupported CI service."
+        _ -> do print "Unsupported CI service. Assuming local build"
+                return ("local-build", "0")
     where ciEnvVars = [
            ("TRAVIS",      ("travis-ci", "TRAVIS_JOB_ID")),
            ("CIRCLECI",    ("circleci",  "CIRCLE_BUILD_NUM")),

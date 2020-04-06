@@ -137,7 +137,7 @@ generateCoverallsFromTix :: String       -- ^ CI name
                          -> Maybe String -- ^ Package name-version
                          -> IO Value     -- ^ code coverage result in json format
 generateCoverallsFromTix serviceName jobId gitInfo config mPkgNameVer = do
-    mHpcDir <- firstExistingDirectory hpcDirs
+    mHpcDir <- firstExistingDirectory (hpcDirs mPkgNameVer)
     case mHpcDir of
         Nothing -> putStrLn "Couldn't find the hpc data directory" >> dumpDirectory distDir >> ioFailure
         Just hpcDir -> do
