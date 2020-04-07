@@ -19,6 +19,7 @@ import           Data.Digest.Pure.MD5
 import           Data.Function
 import           Data.List
 import qualified Data.Map.Strict as M
+import           System.Directory (listDirectory)
 import           System.Exit (exitFailure)
 import           Trace.Hpc.Coveralls.Config
 import           Trace.Hpc.Coveralls.GitInfo (GitInfo)
@@ -139,17 +140,42 @@ generateCoverallsFromTix :: String       -- ^ CI name
 generateCoverallsFromTix serviceName jobId gitInfo config mPkgNameVer = do
     mHpcDir <- firstExistingDirectory (hpcDirs mPkgNameVer)
     case mHpcDir of
-        Nothing -> putStrLn "Couldn't find the hpc data directory" >> dumpDirectory distDir >> ioFailure
+        Nothing ->
+            putStrLn "Couldn't find the hpc data directory" >>
+            dumpDirectory distDir >>
+            ioFailure
         Just hpcDir -> do
-            testSuitesCoverages <- mapM (readCoverageData mPkgNameVer hpcDir excludedDirPatterns) testSuiteNames
+            testSuiteNames <-
+                case testSuites config of
+                    TestSuites xs -> return xs
+                    All ->
+                        case mPkgNameVer of
+                            Just pkgNameVer ->
+                                filter (/= pkgNameVer) <$>
+                                (listDirectory $ tixDir hpcDir)
+                            Nothing -> do
+                                putStrLn
+                                    "Unable to guess the package name, explicitly specify the test suites to cover."
+                                ioFailure
+            testSuitesCoverages <-
+                mapM
+                    (readCoverageData mPkgNameVer hpcDir excludedDirPatterns)
+                    testSuiteNames
             let coverageData = mergeCoverageData testSuitesCoverages
-            return $ toCoverallsJson serviceName jobId repoTokenM gitInfo converter coverageData
+            return $
+                toCoverallsJson
+                    serviceName
+                    jobId
+                    repoTokenM
+                    gitInfo
+                    converter
+                    coverageData
             where excludedDirPatterns = excludedDirs config
-                  testSuiteNames = testSuites config
                   repoTokenM = repoToken config
-                  converter = case coverageMode config of
-                      StrictlyFullLines -> strictConverter
-                      AllowPartialLines -> looseConverter
+                  converter =
+                      case coverageMode config of
+                          StrictlyFullLines -> strictConverter
+                          AllowPartialLines -> looseConverter
 
 ioFailure :: IO a
 ioFailure = putStrLn ("You can get support at " ++ gitterUrl) >> exitFailure

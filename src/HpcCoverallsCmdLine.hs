@@ -10,7 +10,7 @@ import Trace.Hpc.Coveralls.Types
 
 data HpcCoverallsArgs = CmdMain
     { optExcludeDirs   :: [String]
-    , argTestSuites    :: [String]
+    , argTestSuites    :: Maybe [String]
     , optCabalFile     :: Maybe String
     , optServiceName   :: Maybe String
     , optRepoToken     :: Maybe String
@@ -30,7 +30,7 @@ hpcCoverallsArgs = CmdMain
     , optCabalFile     = Nothing           &= explicit &= typ "FILE"  &= name "cabal-file"     &= help "Cabal file (ex.: module-name.cabal)"
     , optServiceName   = Nothing           &= explicit &= typ "TOKEN" &= name "service-name"   &= help "service-name (e.g. travis-pro)"
     , optRepoToken     = Nothing           &= explicit &= typ "TOKEN" &= name "repo-token"     &= help "Coveralls repo token"
-    , argTestSuites    = []                &= typ "TEST-SUITES" &= args
+    , argTestSuites    = Nothing           &= typ "TEST-SUITES" &= args
     } &= summary ("hpc-coveralls v" ++ versionString version ++ ", (C) Guillaume Nargeot 2014-2015")
       &= program "hpc-coveralls"
     where versionString = intercalate "." . map show . versionBranch
