@@ -1,6 +1,5 @@
 module Main where
 
-import           Control.Applicative
 import           Control.Concurrent
 import           Control.Monad
 import           Data.Aeson
@@ -19,7 +18,6 @@ import           Trace.Hpc.Coveralls.Config
     )
 import           Trace.Hpc.Coveralls.Curl
 import           Trace.Hpc.Coveralls.GitInfo (getGitInfo)
-import           Trace.Hpc.Coveralls.Util
 
 urlApiV1 :: String
 urlApiV1 = "https://coveralls.io/api/v1/jobs"
@@ -58,7 +56,6 @@ main = do
     let config = getConfig hca
     (defaultServiceName, jobId) <- getServiceAndJobID
     let sn = fromMaybe defaultServiceName (serviceName config)
-    gitInfo <- getGitInfo
     mPkgNameVer <-
         case cabalFile config of
             Just cabalFilePath -> getPackageNameVersion cabalFilePath

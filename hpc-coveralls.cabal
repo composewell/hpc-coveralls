@@ -46,14 +46,14 @@ library
     Trace.Hpc.Coveralls,
     Trace.Hpc.Coveralls.Lix,
     Trace.Hpc.Coveralls.Types,
-    Trace.Hpc.Coveralls.Util
-  other-modules:
     HpcCoverallsCmdLine,
-    Paths_hpc_coveralls,
     Trace.Hpc.Coveralls.Cabal,
     Trace.Hpc.Coveralls.Config,
     Trace.Hpc.Coveralls.Curl,
-    Trace.Hpc.Coveralls.GitInfo,
+    Trace.Hpc.Coveralls.GitInfo
+  other-modules:
+    Paths_hpc_coveralls,
+    Trace.Hpc.Coveralls.Util,
     Trace.Hpc.Coveralls.Paths
   build-depends:
     aeson          >= 0.7.1   && <1.5,
@@ -74,7 +74,7 @@ library
     transformers   >= 0.4.1   && <0.6
 
 executable hpc-coveralls
-  hs-source-dirs: src
+  hs-source-dirs: exe
   main-is:        HpcCoverallsMain.hs
   build-depends:
     aeson          >= 0.7.1   && <1.5,
@@ -92,18 +92,20 @@ executable hpc-coveralls
     retry          >= 0.5     && <0.8,
     safe           >= 0.3     && <0.4,
     split          >= 0.2.2   && <0.3,
-    transformers   >= 0.4.1   && <0.6
+    transformers   >= 0.4.1   && <0.6,
+    hpc-coveralls
   ghc-options:    -Wall -fwarn-tabs -fwarn-incomplete-uni-patterns
 
 executable run-cabal-test
-  hs-source-dirs: src
+  hs-source-dirs: exe
   main-is:        RunCabalTestMain.hs
   build-depends:
     async >= 2.0,
     base >=4 && < 5,
     process,
     regex-posix,
-    split
+    split,
+    hpc-coveralls
   ghc-options:    -Wall -fwarn-tabs -fwarn-incomplete-uni-patterns
 
 test-suite test-all
